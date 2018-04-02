@@ -6,6 +6,9 @@
 #define SOUP_RENDERER_H
 
 
+#include <GL/glcorearb.h>
+#include <GLFW/glfw3.h>
+
 class Renderer {
 private:
     struct {
@@ -35,8 +38,23 @@ private:
             "e = s.yzwx,\n"
             "f = max(o.x-s,e-o.x);\n"
             "outColor = dot(clamp(f*r.y,0.,1.), 72.*(s-e)) * (s-.1) + f;\n}";
+    GLuint m_fragment_shader;
+    GLuint m_vertex_shader;
+    GLuint m_program;
+    GLFWwindow* m_window;
 public:
+    struct resolution {
+        float x = 0.0;
+        float y = 0.0;
+    };
     void compile_shader(char* file);
+    bool check_shader(char* log);
+    bool load_renderer(char **log);
+    resolution get_resolution();
+    GLint get_uniform_location(const char *name);
+    GLFWwindow* get_window();
+
+    virtual ~Renderer();
 };
 
 
