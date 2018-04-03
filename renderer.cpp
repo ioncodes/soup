@@ -74,7 +74,7 @@ void Renderer::compile_shader(char *file) {
     m_program = glCreateProgram();
     glAttachShader(m_program, m_vertex_shader);
     glAttachShader(m_program, m_fragment_shader);
-    glBindFragDataLocation(m_program, 0, "outColor");
+    glBindFragDataLocation(m_program, 0, "out_color");
     glLinkProgram(m_program);
     glDetachShader(m_program, m_fragment_shader);
     glDetachShader(m_program, m_vertex_shader);
@@ -86,24 +86,22 @@ void Renderer::compile_shader(char *file) {
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
 }
 
-bool Renderer::check_shader(char* log) {
+std::string Renderer::check_shader() {
     GLint success = 0;
     glGetShaderiv(m_fragment_shader, GL_COMPILE_STATUS, &success);
     GLint max_length = 0;
     glGetShaderiv(m_fragment_shader, GL_INFO_LOG_LENGTH, &max_length);
     if (!success) {
-        std::vector<GLchar> errorLog(max_length);
-        glGetShaderInfoLog(m_fragment_shader, max_length, &max_length, &errorLog[0]);
-        log = &errorLog[0];
-        return false;
+        std::vector<GLchar> error_log(max_length);
+        glGetShaderInfoLog(m_fragment_shader, max_length, &max_length, &error_log[0]);
+        return &error_log[0];
     }
-    return true;
+    return "";
 }
 
-bool Renderer::load_renderer(char **log) {
+std::string Renderer::load_renderer() {
     if (!glfwInit()) {
-        log = (char **) "Failed to initialize GLFW";
-        return false;
+        return "Failed to initialize GLFW";
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -119,10 +117,9 @@ bool Renderer::load_renderer(char **log) {
     glfwSwapInterval(1);
 
     if (gl3wInit()) {
-        log = (char **) "Failed to initialize OpenGL";
-        return false;
+        return "Failed to initialize OpenGL";
     }
-    return true;
+    return "";
 }
 
 Renderer::resolution Renderer::get_resolution() {
@@ -143,10 +140,19 @@ GLFWwindow* Renderer::get_window() {
     return m_window;
 }
 
-Renderer::~Renderer() {
-    try {
-        //glDeleteShader(m_fragment_shader);
-        //glDeleteShader(m_vertex_shader);
-        //glDeleteProgram(m_program);
-    } catch(int e) {}
+void Renderer::print_renderer() {
+    const GLubyte* render = glGetString(GL_RENDERER);
+    const GLubyte* version = glGetString(GL_VERSION);
+    std::string log_render = std::string("Renderer: ").append((char*)render);
+    std::string log_version = std::string("OpenGL version supported: ").append((char*)version);
+    std::cout << log_render << std::endl;
+    std::cout << log_version << std::endl;
+}
+
+void Renderer::draw_buffer() {
+    glClearColor(m_clear_color.r, m_clear_color.g, m_clear_color.b, m_clear_color.a);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    glfwSwapBuffers(m_window);
 }

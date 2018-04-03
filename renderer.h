@@ -8,6 +8,7 @@
 
 #include <GL/glcorearb.h>
 #include <GLFW/glfw3.h>
+#include <string>
 
 class Renderer {
 private:
@@ -17,14 +18,14 @@ private:
         float b = 0;
         float a = 1;
     } m_clear_color;
-    const char *VERTEX =
+    const char* VERTEX =
             "#version 330 core\n"
             "in vec2 position;\n"
             "void main()\n"
             "{\n"
             "gl_Position = vec4(position, 0.0, 1.0);\n"
             "}\n";
-    const char *DEFAULT_FRAGMENT =
+    const char* DEFAULT_FRAGMENT =
             "#version 330 core\n"
             "uniform float time;\n"
             "uniform vec2 resolution;\n"
@@ -48,13 +49,13 @@ public:
         float y = 0.0;
     };
     void compile_shader(char* file);
-    bool check_shader(char* log);
-    bool load_renderer(char **log);
+    std::string check_shader();
+    void print_renderer();
+    std::string load_renderer();
     resolution get_resolution();
-    GLint get_uniform_location(const char *name);
+    GLint get_uniform_location(const char* name);
     GLFWwindow* get_window();
-
-    virtual ~Renderer();
+    void draw_buffer();
 };
 
 

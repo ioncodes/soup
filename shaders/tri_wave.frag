@@ -5,7 +5,7 @@
 uniform float time;
 uniform vec2 resolution;
 
-out vec4 outColor;
+out vec4 out_color;
 
 float round(float v) {
     if (v - floor(v) >= 0.5)
@@ -91,5 +91,5 @@ void main(void) {
 
     color *= vec3(clamp(darkness * 4.0, 0.0, 1.0));
 
-    outColor = vec4(color, 1.0);
+    out_color = vec4(color, 1.0);
 }
