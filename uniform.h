@@ -1,5 +1,5 @@
 //
-// Created by Leo Cerrato on 05.04.18.
+// Created by Luca Marcelli on 05.04.18.
 //
 
 #ifndef SOUP_UNIFORM_H
