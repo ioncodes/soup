@@ -2,8 +2,8 @@
     <NAME>Test</NAME>
     <SETTINGS>
         <RESOLUTION>
-            <WIDTH>1080</WIDTH>
-            <HEIGHT>720</HEIGHT>
+            <WIDTH>720</WIDTH>
+            <HEIGHT>600</HEIGHT>
         </RESOLUTION>
         <MSAA>0</MSAA>
         <SHOW_FPS>1</SHOW_FPS>
