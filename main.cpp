@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <BASS/bass.h>
+#include <lua/lua.hpp>
 #include <numeric>
 #include "renderer.h"
 #include "project.h"
@@ -16,6 +17,8 @@ int main(int argc, const char** argv) {
     renderer = Renderer();
     project = Project();
     BASS_Init(-1, 44100, 0, 0, NULL);
+    lua_State* vm = luaL_newstate();
+    luaL_openlibs(vm);
 
     cxxopts::Options options("soup", "Haven't you been waiting for this engine?");
     options.add_options()
@@ -33,6 +36,8 @@ int main(int argc, const char** argv) {
     float time_step = project.time_step();
     bool show_fps = project.show_fps();
     string sound = project.sound();
+    string script = project.script();
+    vector<uniform> uniforms = project.uniforms();
 
     cout << "Loaded project " << project_name << endl;
     cout << "Resolution: " << resolution.x << " x " << resolution.y << endl;
@@ -41,6 +46,12 @@ int main(int argc, const char** argv) {
     cout << "Shader: " << shader << endl;
     cout << "Time Step: " << time_step << endl;
     cout << "Sound: " << sound << endl;
+    cout << "Script: " << script << endl;
+
+    if (luaL_loadfile(vm, script.c_str()) || lua_pcall(vm, 0, 0, 0)) {
+        cerr << "error loading " << script << endl;
+        vm = nullptr;
+    }
 
     string log = renderer.load_renderer(msaa_level, resolution);
     if(log.length() > 0) {
@@ -82,22 +93,30 @@ int main(int argc, const char** argv) {
         glUniform1f(time_loc, time);
         glUniform1f(spectrum_loc, (float)mag);
 
-        float _fft[1024];
-        BASS_ChannelGetData(stream, _fft, BASS_DATA_FFT2048);
-
-        std::vector<float> fft(_fft, _fft + sizeof _fft / sizeof _fft[0]);
-
-        mag = std::accumulate(fft.begin(), fft.end(),
-                                     0.0);
-        // double db = 20 * log10(mag);
-
         renderer.draw_buffer();
 
+        float _fft[1024];
+        BASS_ChannelGetData(stream, _fft, BASS_DATA_FFT2048);
+        std::vector<float> fft(_fft, _fft + sizeof _fft / sizeof _fft[0]);
+        mag = std::accumulate(fft.begin(), fft.end(), 0.0);
+
         time += time_step;
+
+        lua_pushstring(vm, "update");
+        lua_gettable(vm, LUA_GLOBALSINDEX);
+        lua_pcall(vm, 0, 0, 0);
+
+        for(auto uniform : uniforms) {
+            lua_getglobal(vm, uniform.name.c_str());
+            auto value = (float)lua_tonumber(vm, -1);
+            uniform.value = value;
+            cout << value << endl;
+        }
     }
 
     glfwTerminate();
     BASS_Free();
+    if(vm) lua_close(vm);
 
     cout << "Bye." << endl;
 }

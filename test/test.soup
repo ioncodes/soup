@@ -11,4 +11,11 @@
     <SHADER>tri_wave.frag</SHADER>
     <SOUND>test.mp3</SOUND>
     <STEP>0.01</STEP>
+    <SCRIPT>test.lua</SCRIPT>
+    <UNIFORMS>
+        <UNIFORM>
+            <NAME>test</NAME>
+            <VALUE>0.00</VALUE>
+        </UNIFORM>
+    </UNIFORMS>
 </PROJECT>

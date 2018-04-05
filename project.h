@@ -7,7 +7,9 @@
 
 #include "tinyxml2.h"
 #include "resolution.h"
+#include "uniform.h"
 #include <string>
+#include <vector>
 #include <iostream>
 
 using namespace std;
@@ -24,6 +26,8 @@ private:
     float m_time_step;
     bool m_show_fps;
     string m_sound;
+    string m_script;
+    vector<uniform> m_uniforms;
 
 public:
     void load_project(string file);
@@ -34,6 +38,8 @@ public:
     float time_step();
     bool show_fps();
     string sound();
+    string script();
+    vector<uniform> uniforms();
     Project();
 };
 

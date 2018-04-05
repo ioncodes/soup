@@ -35,9 +35,19 @@ void Project::load_project(string file) {
         m_show_fps = (bool)m_project->FirstChildElement("PROJECT")->FirstChildElement("SETTINGS")->FirstChildElement("SHOW_FPS")->GetText();
         string shader_file = m_project->FirstChildElement("PROJECT")->FirstChildElement("SHADER")->GetText();
         string sound_file = m_project->FirstChildElement("PROJECT")->FirstChildElement("SOUND")->GetText();
+        string script_file = m_project->FirstChildElement("PROJECT")->FirstChildElement("SCRIPT")->GetText();
         m_shader = get_project_dir(file).append(shader_file);
         m_sound = get_project_dir(file).append(sound_file);
+        m_script = get_project_dir(file).append(script_file);
         m_time_step = (float)atof(m_project->FirstChildElement("PROJECT")->FirstChildElement("STEP")->GetText());
+        auto uniforms = m_project->FirstChildElement("PROJECT")->FirstChildElement("UNIFORMS");
+        for(tinyxml2::XMLElement* child = uniforms->FirstChildElement(); child != NULL; child = child->NextSiblingElement()) {
+            string name = child->FirstChildElement("NAME")->GetText();
+            float value = (float)atof(child->FirstChildElement("VALUE")->GetText());
+            m_uniforms.push_back(uniform {
+                .name = name, .value = value
+            });
+        }
     }
 }
 
@@ -72,4 +82,12 @@ bool Project::show_fps() {
 
 string Project::sound() {
     return m_sound;
+}
+
+string Project::script() {
+    return m_script;
+}
+
+vector<uniform> Project::uniforms() {
+    return m_uniforms;
 }
