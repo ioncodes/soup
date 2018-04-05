@@ -5,6 +5,6 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_library (OpenGL REQUIRED)
 
-add_executable(soup gl3w.c main.cpp renderer.cpp renderer.h)
+add_executable(soup gl3w.c main.cpp renderer.cpp renderer.h project.cpp project.h tinyxml2.cpp tinyxml2.h resolution.h cxxopts.hpp)
 
-target_link_libraries(soup glfw)
+target_link_libraries(soup glfw bass)

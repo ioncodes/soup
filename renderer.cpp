@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <GLFW/glfw3.h>
+#include <cmath>
 #include "renderer.h"
 
 static void error_callback(int error, const char* description) {
@@ -16,6 +17,7 @@ static void error_callback(int error, const char* description) {
 static void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     printf("Resizing to %dx%d\n", width, height);
     glViewport(0, 0, width, height);
+    // glUniform2f(resolution_loc, resolution.x, resolution.y);
 }
 
 void Renderer::compile_shader(char *file) {
@@ -63,9 +65,9 @@ void Renderer::compile_shader(char *file) {
 
     // Create and compile the fragment shader
     m_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    std::ifstream t(file);
-    std::string str((std::istreambuf_iterator<char>(t)),
-                    std::istreambuf_iterator<char>());
+    ifstream t(file);
+    string str((istreambuf_iterator<char>(t)),
+                    istreambuf_iterator<char>());
     const char *c_str = str.c_str();
     glShaderSource(m_fragment_shader, 1, &c_str, NULL);
     glCompileShader(m_fragment_shader);
@@ -86,20 +88,20 @@ void Renderer::compile_shader(char *file) {
     glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), 0);
 }
 
-std::string Renderer::check_shader() {
+string Renderer::check_shader() {
     GLint success = 0;
     glGetShaderiv(m_fragment_shader, GL_COMPILE_STATUS, &success);
     GLint max_length = 0;
     glGetShaderiv(m_fragment_shader, GL_INFO_LOG_LENGTH, &max_length);
     if (!success) {
-        std::vector<GLchar> error_log(max_length);
+        vector<GLchar> error_log(max_length);
         glGetShaderInfoLog(m_fragment_shader, max_length, &max_length, &error_log[0]);
         return &error_log[0];
     }
     return "";
 }
 
-std::string Renderer::load_renderer() {
+string Renderer::load_renderer(int msaa_level, resolution res) {
     if (!glfwInit()) {
         return "Failed to initialize GLFW";
     }
@@ -107,10 +109,12 @@ std::string Renderer::load_renderer() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, msaa_level);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    m_window = glfwCreateWindow(1280, 720, ".: soup :.", NULL, NULL);
+    m_window = glfwCreateWindow((int)res.x, (int)res.y, ".: soup :.", NULL, NULL);
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
     glfwSetErrorCallback(error_callback);
     glfwMakeContextCurrent(m_window);
@@ -122,7 +126,7 @@ std::string Renderer::load_renderer() {
     return "";
 }
 
-Renderer::resolution Renderer::get_resolution() {
+resolution Renderer::get_resolution() {
     int width;
     int height;
     glfwGetFramebufferSize(m_window, &width, &height);
@@ -132,7 +136,7 @@ Renderer::resolution Renderer::get_resolution() {
     };
 }
 
-GLint Renderer::get_uniform_location(const char *name) {
+GLint Renderer::get_uniform_location(const char* name) {
     return glGetUniformLocation(m_program, name);
 }
 
@@ -143,10 +147,10 @@ GLFWwindow* Renderer::get_window() {
 void Renderer::print_renderer() {
     const GLubyte* render = glGetString(GL_RENDERER);
     const GLubyte* version = glGetString(GL_VERSION);
-    std::string log_render = std::string("Renderer: ").append((char*)render);
-    std::string log_version = std::string("OpenGL version supported: ").append((char*)version);
-    std::cout << log_render << std::endl;
-    std::cout << log_version << std::endl;
+    string log_render = string("Renderer: ").append((char*)render);
+    string log_version = string("OpenGL version supported: ").append((char*)version);
+    cout << log_render << endl;
+    cout << log_version << endl;
 }
 
 void Renderer::draw_buffer() {
@@ -154,5 +158,31 @@ void Renderer::draw_buffer() {
     glClear(GL_COLOR_BUFFER_BIT);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+    if(m_draw_fps) {
+        draw_fps();
+    }
+
     glfwSwapBuffers(m_window);
+}
+
+void Renderer::enable_fps() {
+    m_draw_fps = true;
+    t0 = glfwGetTime();
+}
+
+void Renderer::draw_fps() {
+    t = glfwGetTime();
+
+    if((t - t0) > 1.0 || m_fps == 0) {
+        m_fps = m_fps / (t - t0);
+        string fps_str = to_string(round(m_fps * 10.0) / 10.0);
+        fps_str.erase(fps_str.find_last_not_of('0') + 1, string::npos);
+        if(fps_str[fps_str.length() - 1] == '.') {
+            fps_str.append("0");
+        }
+        glfwSetWindowTitle(m_window, string(".: soup :. ~ ").append(fps_str).c_str());
+        t0 = t;
+        m_fps = 0;
+    }
+    m_fps++;
 }

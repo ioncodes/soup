@@ -1,0 +1,14 @@
+<PROJECT>
+    <NAME>Test</NAME>
+    <SETTINGS>
+        <RESOLUTION>
+            <WIDTH>1080</WIDTH>
+            <HEIGHT>720</HEIGHT>
+        </RESOLUTION>
+        <MSAA>0</MSAA>
+        <SHOW_FPS>1</SHOW_FPS>
+    </SETTINGS>
+    <SHADER>tri_wave.frag</SHADER>
+    <SOUND>test.mp3</SOUND>
+    <STEP>0.01</STEP>
+</PROJECT>

@@ -9,6 +9,9 @@
 #include <GL/glcorearb.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include "resolution.h"
+
+using namespace std;
 
 class Renderer {
 private:
@@ -43,19 +46,20 @@ private:
     GLuint m_vertex_shader;
     GLuint m_program;
     GLFWwindow* m_window;
+    double m_fps;
+    double t, t0;
+    bool m_draw_fps = false;
 public:
-    struct resolution {
-        float x = 0.0;
-        float y = 0.0;
-    };
     void compile_shader(char* file);
-    std::string check_shader();
+    string check_shader();
     void print_renderer();
-    std::string load_renderer();
+    string load_renderer(int msaa_level, resolution res);
     resolution get_resolution();
     GLint get_uniform_location(const char* name);
     GLFWwindow* get_window();
     void draw_buffer();
+    void draw_fps();
+    void enable_fps();
 };
 
 
