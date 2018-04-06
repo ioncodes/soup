@@ -91,7 +91,7 @@ int main(int argc, const char** argv) {
         glfwPollEvents();
 
         glUniform1f(time_loc, time);
-        glUniform1f(spectrum_loc, (float)mag);
+        glUniform1f(spectrum_loc, (float) mag);
 
         renderer.draw_buffer();
 
@@ -106,11 +106,15 @@ int main(int argc, const char** argv) {
         lua_gettable(vm, LUA_GLOBALSINDEX);
         lua_pcall(vm, 0, 0, 0);
 
-        for(auto uniform : uniforms) {
+        lua_pushnumber(vm, mag);
+        lua_setglobal(vm, "spectrum");
+
+        for (auto uniform : uniforms) {
             lua_getglobal(vm, uniform.name.c_str());
-            auto value = (float)lua_tonumber(vm, -1);
+            auto value = (float) lua_tonumber(vm, -1);
             uniform.value = value;
-            cout << value << endl;
+            GLint loc = renderer.get_uniform_location(uniform.name.c_str());
+            glUniform1f(loc, uniform.value);
         }
     }
 

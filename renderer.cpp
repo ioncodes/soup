@@ -117,6 +117,7 @@ string Renderer::load_renderer(int msaa_level, resolution res) {
     m_window = glfwCreateWindow((int)res.x, (int)res.y, ".: soup :.", NULL, NULL);
     glfwSetFramebufferSizeCallback(m_window, framebuffer_size_callback);
     glfwSetErrorCallback(error_callback);
+    glfwSetInputMode(m_window, GLFW_STICKY_KEYS, 1);
     glfwMakeContextCurrent(m_window);
     glfwSwapInterval(1);
 

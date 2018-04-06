@@ -1,0 +1,33 @@
+<PROJECT>
+    <NAME>Intro</NAME>
+    <SETTINGS>
+        <RESOLUTION>
+            <WIDTH>720</WIDTH>
+            <HEIGHT>300</HEIGHT>
+        </RESOLUTION>
+        <MSAA>8</MSAA>
+        <SHOW_FPS>1</SHOW_FPS>
+    </SETTINGS>
+    <SHADER>intro.frag</SHADER>
+    <SOUND>intro.mp3</SOUND>
+    <STEP>0.01</STEP>
+    <SCRIPT>intro.lua</SCRIPT>
+    <UNIFORMS>
+        <UNIFORM>
+            <NAME>hits</NAME>
+            <VALUE>0.00</VALUE>
+        </UNIFORM>
+        <UNIFORM>
+            <NAME>random</NAME>
+            <VALUE>0.00</VALUE>
+        </UNIFORM>
+        <UNIFORM>
+            <NAME>move</NAME>
+            <VALUE>0.00</VALUE>
+        </UNIFORM>
+        <UNIFORM>
+            <NAME>spectrum_pos</NAME>
+            <VALUE>0.0</VALUE>
+        </UNIFORM>
+    </UNIFORMS>
+</PROJECT>
